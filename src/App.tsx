@@ -1,24 +1,14 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import CardContainer from "./components/cardContainer";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="bg-slate-700 h-screen flex justify-center items-center">
+      <div className="bg-teal-200 flex flex-1">
+        <img src="/public/orangeoffice.jpeg" alt="Office Image" />
+      </div>
+      <div className="w-7/12 h-full flex items-start">
+        <CardContainer />
+      </div>
     </div>
   );
 }
