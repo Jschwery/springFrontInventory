@@ -4,7 +4,10 @@ import Header from "../components/Header";
 function Home() {
   return (
     <div>
-      <Header />
+      <Header
+        linkTitles={["About Us", "What We Do", "Pricing", "Support"]}
+        button
+      />
     </div>
   );
 }

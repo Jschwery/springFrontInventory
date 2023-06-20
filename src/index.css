@@ -12,6 +12,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.noHoverEffects:hover {
+  @apply !opacity-100;
+}
+
+
+.headerFonts > a {
+  @apply text-white font-bold font-Inter hover:opacity-60 cursor-pointer
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
