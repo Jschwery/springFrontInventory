@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CardRow from "./cardRow";
+import { useNavigate } from "react-router-dom";
 
 export interface FieldState {
   value: string;
@@ -7,14 +8,47 @@ export interface FieldState {
   isValid: boolean;
 }
 
-function CardContainer() {
-  const [inputValues, setInputValues] = useState<{ [key: string]: FieldState }>(
-    {
-      Name: { value: "", isValid: true, errorMessage: "" },
-      Email: { value: "", isValid: true, errorMessage: "" },
-      Password: { value: "", isValid: true, errorMessage: "" },
-      "Re-enter Password": { value: "", isValid: true, errorMessage: "" },
+export interface CardContainerProps {
+  numberOfRows: number;
+  rowTitles: string[];
+  submitButtonText: string;
+  containerTitle: string;
+  additionalText?: [text: string, textHyper?: string];
+  setLink?: string;
+}
+
+function CardContainer({
+  numberOfRows,
+  rowTitles,
+  submitButtonText,
+  containerTitle,
+  additionalText,
+  setLink,
+}: CardContainerProps) {
+  if (numberOfRows !== rowTitles.length) {
+    throw new Error(
+      "Number of rows does not match the number of titles provided"
+    );
+  }
+
+  const navigate = useNavigate();
+
+  const handleSignInClick = () => {
+    if (setLink) {
+      navigate(setLink);
+    } else {
+      throw new Error("Invalid link provided");
     }
+  };
+
+  const defaultInputValues = rowTitles.reduce((acc, title) => {
+    acc[title] = { value: "", isValid: true, errorMessage: "" };
+    return acc;
+  }, {} as { [key: string]: FieldState });
+
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [inputValues, setInputValues] = useState<{ [key: string]: FieldState }>(
+    defaultInputValues
   );
 
   const validateInput = (rowTitle: string, value: string) => {
@@ -68,15 +102,18 @@ function CardContainer() {
   };
 
   const handleInputChange = (rowTitle: string, value: string) => {
+    if (isSubmitted) {
+      validateInput(rowTitle, value);
+    }
+
     setInputValues((prev) => ({
       ...prev,
       [rowTitle]: { ...prev[rowTitle], value },
     }));
-
-    validateInput(rowTitle, value);
   };
 
   const handleSubmit = () => {
+    setIsSubmitted(true);
     for (const key of Object.keys(inputValues)) {
       validateInput(key, inputValues[key].value);
     }
@@ -85,45 +122,36 @@ function CardContainer() {
   return (
     <>
       <div className="w-full h-full items-center bg-slate-50 flex flex-col p-10 py-20 space-y-8">
-        <h2 className=" text-5xl font-Inter">Create Your Account</h2>
-        <CardRow
-          rowTitle="Name"
-          isValid={inputValues.Name.isValid}
-          errorMessage={inputValues.Name.errorMessage}
-          onInputChange={handleInputChange}
-        />
-        <CardRow
-          rowTitle="Email"
-          isValid={inputValues.Email.isValid}
-          errorMessage={inputValues.Email.errorMessage}
-          onInputChange={handleInputChange}
-        />
-        <CardRow
-          rowTitle="Password"
-          isValid={inputValues.Password.isValid}
-          errorMessage={inputValues.Password.errorMessage}
-          onInputChange={handleInputChange}
-        />
-        <CardRow
-          rowTitle="Re-enter Password"
-          isValid={inputValues["Re-enter Password"].isValid}
-          errorMessage={inputValues["Re-enter Password"].errorMessage}
-          onInputChange={handleInputChange}
-        />
+        <h2 className="text-5xl font-Inter">{containerTitle}</h2>
+        {rowTitles.map((title) => (
+          <CardRow
+            key={title}
+            rowTitle={title}
+            isValid={inputValues[title].isValid}
+            errorMessage={inputValues[title].errorMessage}
+            onInputChange={handleInputChange}
+          />
+        ))}
         <button
           className="bg-orange-600 hover:bg-orange-400 text-white w-4/6 py-4 !mt-12 px-9 rounded font-bold"
           onClick={handleSubmit}
         >
-          Submit
+          {submitButtonText}
         </button>
         <h2>
-          Already have an account?{" "}
-          <span onClick={() => {}} className="text-blue-600 cursor-pointer">
-            Login
-          </span>
+          {additionalText?.[0]}{" "}
+          {additionalText?.[1] && (
+            <span
+              onClick={() => handleSignInClick()}
+              className="text-blue-600 cursor-pointer"
+            >
+              {additionalText?.[1]}
+            </span>
+          )}
         </h2>
       </div>
     </>
   );
 }
+
 export default CardContainer;
