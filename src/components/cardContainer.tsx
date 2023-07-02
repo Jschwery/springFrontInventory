@@ -1,6 +1,6 @@
-import { useState } from "react";
-import CardRow from "./cardRow";
 import { useNavigate } from "react-router-dom";
+import CardRow from "./cardRow";
+import { State } from "../pages/Login";
 
 export interface FieldState {
   value: string;
@@ -15,6 +15,9 @@ export interface CardContainerProps {
   containerTitle: string;
   additionalText?: [text: string, textHyper?: string];
   setLink?: string;
+  inputValues: State;
+  handleInputChange: (rowTitle: string, value: string) => void;
+  handleSubmit: () => void;
 }
 
 function CardContainer({
@@ -24,6 +27,9 @@ function CardContainer({
   containerTitle,
   additionalText,
   setLink,
+  inputValues,
+  handleInputChange,
+  handleSubmit,
 }: CardContainerProps) {
   if (numberOfRows !== rowTitles.length) {
     throw new Error(
@@ -38,84 +44,6 @@ function CardContainer({
       navigate(setLink);
     } else {
       throw new Error("Invalid link provided");
-    }
-  };
-
-  const defaultInputValues = rowTitles.reduce((acc, title) => {
-    acc[title] = { value: "", isValid: true, errorMessage: "" };
-    return acc;
-  }, {} as { [key: string]: FieldState });
-
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [inputValues, setInputValues] = useState<{ [key: string]: FieldState }>(
-    defaultInputValues
-  );
-
-  const validateInput = (rowTitle: string, value: string) => {
-    let isValid = true;
-    let errorMessage = "";
-
-    switch (rowTitle.toLowerCase()) {
-      case "name":
-        if (value.length > 20) {
-          isValid = false;
-          errorMessage = "Name cannot exceed 20 characters";
-        } else if (value.length === 0) {
-          isValid = false;
-          errorMessage = "Please enter a name";
-        }
-        break;
-      case "email":
-        const emailRegexp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        if (value.length === 0) {
-          isValid = false;
-          errorMessage = "Please enter email address";
-        } else if (!emailRegexp.test(value)) {
-          isValid = false;
-          errorMessage = "Invalid email format";
-        }
-        break;
-      case "password":
-        if (value.length === 0) {
-          isValid = false;
-          errorMessage = "Please enter a password";
-        }
-        break;
-      case "re-enter password":
-        if (value.length === 0) {
-          isValid = false;
-          errorMessage = "Please enter a password";
-        }
-        if (value !== inputValues.Password.value) {
-          isValid = false;
-          errorMessage = "Password does not match!";
-        }
-        break;
-      default:
-        break;
-    }
-
-    setInputValues((prev) => ({
-      ...prev,
-      [rowTitle]: { value, isValid, errorMessage },
-    }));
-  };
-
-  const handleInputChange = (rowTitle: string, value: string) => {
-    if (isSubmitted) {
-      validateInput(rowTitle, value);
-    }
-
-    setInputValues((prev) => ({
-      ...prev,
-      [rowTitle]: { ...prev[rowTitle], value },
-    }));
-  };
-
-  const handleSubmit = () => {
-    setIsSubmitted(true);
-    for (const key of Object.keys(inputValues)) {
-      validateInput(key, inputValues[key].value);
     }
   };
 
