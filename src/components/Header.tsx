@@ -155,20 +155,14 @@ function Header({ linkTitles, button }: HeaderProps) {
           </div>
         )}
       </div>
-      {button && (
-        <div className="flex ">
-          <a onClick={() => handleRoutes("/login")}>
-            <h2 className=" font-Inter font-bold hover:opacity-50 cursor-pointer text-white mr-5">
-              Login
-            </h2>
-          </a>
-          <a onClick={() => handleRoutes("/demo")}>
-            <div className="bg-orange-500 cursor-pointer font-Inter text-white px-2 mr-2 flex items-center rounded-xl">
-              <p>Try Demo</p>
-            </div>
-          </a>
-        </div>
-      )}
+
+      <div className="flex ">
+        <a onClick={() => handleRoutes("/login")}>
+          <h2 className=" font-Inter font-bold hover:opacity-50 cursor-pointer text-white mr-5">
+            Login
+          </h2>
+        </a>
+      </div>
     </div>
   );
 }
