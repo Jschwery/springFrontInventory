@@ -1,5 +1,5 @@
 import { useReducer, useState } from "react";
-import CardContainer, { FieldState } from "../components/cardContainer";
+import CardContainer, { FieldState } from "../components/CardContainer";
 import { userSubmit } from "../util/userSubmit";
 
 export interface State {
@@ -113,20 +113,18 @@ function Login() {
   };
 
   return (
-    <div className="w-screen h-screen bg-tea">
-      <div className="w-1/2 flex h-auto bg-slate-600">
-        <CardContainer
-          numberOfRows={2}
-          rowTitles={["Email", "Password"]}
-          submitButtonText="Sign in"
-          containerTitle="Login"
-          additionalText={["Dont have an account?", "Sign up"]}
-          setLink="/register"
-          inputValues={stateLogin}
-          handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
-        />
-      </div>
+    <div className="w-[90%] md:w-3/5 max-w-[600px] flex bg-slate-600">
+      <CardContainer
+        numberOfRows={2}
+        rowTitles={["Email", "Password"]}
+        submitButtonText="Sign in"
+        containerTitle="Login"
+        additionalText={["Dont have an account?", "Sign up"]}
+        setLink="/register"
+        inputValues={stateLogin}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import CardRow from "./cardRow";
+import CardRow from "./CardRow";
 import { State } from "../pages/Login";
 
 export interface FieldState {
@@ -49,7 +49,7 @@ function CardContainer({
 
   return (
     <>
-      <div className="w-full h-full items-center bg-slate-50 flex flex-col p-10 py-20 space-y-8">
+      <div className="w-full h-full items-center bg-slate-50 flex flex-col p-10 py-20 space-y-8 rounded-md">
         <h2 className="text-5xl font-Inter">{containerTitle}</h2>
         {rowTitles.map((title) => (
           <CardRow

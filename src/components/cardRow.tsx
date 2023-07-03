@@ -20,7 +20,7 @@ function CardRow({
   };
 
   return (
-    <div className="flex flex-col w-4/6">
+    <div className="flex flex-col w-[90%] bg-teal-200">
       <h3 className="pb-2 text-xl">
         {rowTitle}{" "}
         {!isValid && (
