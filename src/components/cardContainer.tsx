@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import CardRow from "./CardRow";
+import CardRow from "./cardRow";
 import { State } from "../pages/Login";
 
 export interface FieldState {
