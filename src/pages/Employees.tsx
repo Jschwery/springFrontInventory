@@ -1,5 +1,10 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  GridRowId,
+} from "@mui/x-data-grid";
 import { tokens } from "../theme";
 import { mockDataTeam } from "../data/mockdata";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
@@ -9,11 +14,17 @@ import Header from "../components/Header";
 import { useEffect, useState } from "react";
 
 function Employees() {
+  const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
-    console.log(windowWidth);
-  }, [windowWidth]);
+    if (selectedRows.length > 0) {
+      const rows: any = mockDataTeam.filter((row) => {
+        return selectedRows.includes(row.id);
+      });
+      console.log(rows);
+    }
+  }, [selectedRows]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -121,7 +132,14 @@ function Employees() {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataTeam} columns={columns} />
+        <DataGrid
+          checkboxSelection
+          rows={mockDataTeam}
+          columns={columns}
+          onRowSelectionModelChange={(newSelection) => {
+            setSelectedRows(newSelection);
+          }}
+        />
       </Box>
     </Box>
   );

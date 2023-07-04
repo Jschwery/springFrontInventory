@@ -1,4 +1,4 @@
-import { Box, useTheme } from "@mui/material";
+import { Box, Grid, useTheme } from "@mui/material";
 import {
   DataGrid,
   GridCellParams,
@@ -10,24 +10,20 @@ import { mockDataContacts } from "../data/mockdata";
 import Header from "../components/Header";
 import { useEffect, useState } from "react";
 
-function Employees() {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+function Contacts() {
+  // const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  useEffect(() => {
-    console.log(windowWidth);
-  }, [windowWidth]);
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     setWindowWidth(window.innerWidth);
+  //   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
+  //   window.addEventListener("resize", handleResize);
 
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -39,57 +35,35 @@ function Employees() {
       flex: 1,
       cellClassName: "name-column--cell",
     },
-  ];
-
-  if (windowWidth > 900) {
-    columns.push({
+    {
       field: "email",
       headerName: "Email",
       flex: 1,
-    });
-  }
-
-  if (windowWidth > 1150) {
-    columns.push({
-      field: "phone",
-      headerName: "Phone Number",
-      flex: 1,
-    });
-  }
-
-  columns.push({
-    field: "access",
-    headerName: "Access Level",
-    flex: 1,
-    renderCell: ({ row: { access } }: GridCellParams) => {
-      return (
-        <Box
-          sx={{
-            backgroundColor:
-              access === "admin"
-                ? colors.greenAcc[600]
-                : access === "manager"
-                ? colors.greenAcc[700]
-                : colors.greenAcc[700],
-            width: "60%",
-            minWidth: "100px",
-            margin: "0 auto",
-            padding: "5px",
-            display: "flex",
-            justifyContent: "center",
-            borderRadius: "4px",
-          }}
-        >
-          {access === "admin" && <AdminPanelSettingsOutlinedIcon />}
-          {access === "manager" && <SecurityOutlinedIcon />}
-          {access === "user" && <LockOpenOutlinedIcon />}
-          <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
-            {access}
-          </Typography>
-        </Box>
-      );
     },
-  });
+    {
+      field: "age",
+      headerName: "Age",
+      width: 100,
+    },
+    {
+      field: "address",
+      headerName: "Address",
+      flex: 1,
+    },
+    {
+      field: "city",
+      headerName: "City",
+      flex: 1,
+    },
+  ];
+
+  // if (windowWidth > 900) {
+  //   columns.push({
+  //     field: "email",
+  //     headerName: "Email",
+  //     flex: 1,
+  //   });
+  // }
 
   return (
     <Box m="20px">
@@ -121,12 +95,19 @@ function Employees() {
           "& .MuiCheckbox-root": {
             color: `${colors.greenAcc[200]} !important`,
           },
+          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            color: `${colors.grey[100]} !important`,
+          },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataTeam} columns={columns} />
+        <DataGrid
+          rows={mockDataContacts}
+          columns={columns}
+          slots={{ toolbar: GridToolbar }}
+        />
       </Box>
     </Box>
   );
 }
 
-export default Employees;
+export default Contacts;

@@ -40,19 +40,20 @@ const SidebarLink = ({
   const theme = useTheme();
   const colorPalette = tokens(theme.palette.mode);
   return (
-    <MenuItem
-      active={current === label}
-      style={{
-        color: colorPalette.grey[100],
-        marginLeft: 10,
-        ...(current === label ? activeStyles : {}),
-      }}
-      onClick={() => setCurrent(label)}
-      icon={symbol}
-    >
-      <Typography style={{ fontSize: fontSize || 14 }}>{label}</Typography>
-      <Link to={path} />
-    </MenuItem>
+    <Link to={path}>
+      <MenuItem
+        active={current === label}
+        style={{
+          color: colorPalette.grey[100],
+          marginLeft: 10,
+          ...(current === label ? activeStyles : {}),
+        }}
+        onClick={() => setCurrent(label)}
+        icon={symbol}
+      >
+        <Typography style={{ fontSize: fontSize || 14 }}>{label}</Typography>
+      </MenuItem>
+    </Link>
   );
 };
 

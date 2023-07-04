@@ -10,6 +10,8 @@ import Topbar from "./global/Topbar";
 import Teams from "./pages/Employees";
 import Employees from "./pages/Employees";
 import "../src/index.css";
+import Contacts from "./pages/Contacts";
+import Invoices from "./pages/Invoices";
 
 // import Teams from "./pages/Teams";
 // import Calendar from "./pages/Calendar";
@@ -35,8 +37,9 @@ function App() {
                 <Topbar />
                 <Routes>
                   <Route path="/" element={<Login />} />
-                  <Route path="/employees" element={<Employees />} />
-                  ...
+                  <Route path="/team" element={<Employees />} />
+                  <Route path="/contacts" element={<Contacts />} />
+                  <Route path="/invoices" element={<Invoices />} />
                 </Routes>
               </div>
             </div>
