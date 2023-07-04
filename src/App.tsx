@@ -7,6 +7,10 @@ import SideNavBar from "./global/SideNavBar";
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import Topbar from "./global/Topbar";
+import Teams from "./pages/Employees";
+import Employees from "./pages/Employees";
+import "../src/index.css";
+
 // import Teams from "./pages/Teams";
 // import Calendar from "./pages/Calendar";
 // import Contacts from "./pages/Contacts";
@@ -24,23 +28,19 @@ function App() {
       <ThemeProvider theme={mode.theme}>
         <CssBaseline />
         <div className="app">
-          <SideNavBar />
-          <main className="content">
-            <Topbar />
-            <Routes>
-              <Route path="/" element={<Login />} />
-              {/* <Route path="/register" element={<Registration />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/teams" element={<Teams />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/invoices" element={<Invoices />} />
-              <Route path="/form" element={<Form />} />
-              <Route path="/faqs" element={<FAQs />} />
-              <Route path="/charts" element={<Charts />} />
-              <Route path="/geography" element={<Geography />} /> */}
-            </Routes>
-          </main>
+          <Router>
+            <div className="layout">
+              <SideNavBar className="sidebar" />
+              <div className="main-content">
+                <Topbar />
+                <Routes>
+                  <Route path="/" element={<Login />} />
+                  <Route path="/employees" element={<Employees />} />
+                  ...
+                </Routes>
+              </div>
+            </div>
+          </Router>
         </div>
       </ThemeProvider>
     </ColorModeContext.Provider>

@@ -1,21 +1,27 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import logo from "../images/logo.png";
-import { DiffieHellmanGroup } from "crypto";
-
-function Header() {
+import { Typography, Box, useTheme } from "@mui/material";
+import { tokens } from "../theme";
+type Header = {
+  subTitle: string;
+  title: string;
+};
+const Header = ({ title, subTitle }: Header) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   return (
-    <div className="bg-slate-700 h-[60px]">
-      <div
-        style={{
-          backgroundImage: `url(${logo})`,
-          width: "100px",
-          height: "100px",
-          backgroundSize: "cover",
-        }}
-      ></div>
-    </div>
+    <Box mb="30px">
+      <Typography
+        variant="h2"
+        color={colors.grey[100]}
+        fontWeight="bold"
+        sx={{ m: "0 0 5px 0" }}
+      >
+        {title}
+      </Typography>
+      <Typography variant="h5" color={colors.greenAcc[400]}>
+        {subTitle}
+      </Typography>
+    </Box>
   );
-}
+};
 
 export default Header;
