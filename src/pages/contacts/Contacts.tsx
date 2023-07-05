@@ -5,9 +5,9 @@ import {
   GridColDef,
   GridToolbar,
 } from "@mui/x-data-grid";
-import { tokens } from "../theme";
-import { mockDataContacts } from "../data/mockdata";
-import Header from "../components/Header";
+import { tokens } from "../../theme";
+import { mockDataContacts } from "../../data/mockdata";
+import Header from "../../components/Header";
 import { useEffect, useState } from "react";
 
 function Contacts() {

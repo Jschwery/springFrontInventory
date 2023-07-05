@@ -1,6 +1,6 @@
 import { useReducer, useState } from "react";
-import CardContainer, { FieldState } from "../components/CardContainer";
-import { userSubmit } from "../util/userSubmit";
+import CardContainer, { FieldState } from "../../components/CardContainer";
+import { userSubmit } from "../../util/userSubmit";
 
 export interface State {
   [key: string]: FieldState;

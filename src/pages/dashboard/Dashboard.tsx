@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { request } from "../util/axiosHelper";
+import { request } from "../../util/axiosHelper";
 
 function Dashboard() {
   // const [data, setData] = useState<any>();

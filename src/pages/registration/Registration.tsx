@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from "react";
 import registration from "../images/register.svg";
-import CardContainer from "../components/CardContainer";
-import { Action, State, createRowReducer } from "./Login";
+import CardContainer from "../../components/CardContainer";
+import { Action, State, createRowReducer } from "../login/Login";
 import logo from "../images/banner_logo.png";
 import { userInfo } from "os";
 

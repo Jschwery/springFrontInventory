@@ -1,8 +1,8 @@
 import { Box, Typography, useThemeProps, Grid, useTheme } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { tokens } from "../theme";
-import { mockDataInvoices } from "../data/mockdata";
-import Header from "../components/Header";
+import { tokens } from "../../theme";
+import { mockDataInvoices } from "../../data/mockdata";
+import Header from "../../components/Header";
 import { useEffect, useState } from "react";
 import { green } from "@mui/material/colors";
 

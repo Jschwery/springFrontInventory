@@ -1,17 +1,19 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
-import Registration from "./pages/Registration";
-import Login from "./pages/Login";
+import Home from "./pages/home/Home";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Registration from "./pages/registration/Registration";
+import Login from "./pages/login/Login";
 import SideNavBar from "./global/SideNavBar";
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import Topbar from "./global/Topbar";
-import Teams from "./pages/Employees";
-import Employees from "./pages/Employees";
+import Teams from "./pages/employees/Employees";
+import Employees from "./pages/employees/Employees";
 import "../src/index.css";
-import Contacts from "./pages/Contacts";
-import Invoices from "./pages/Invoices";
+import Contacts from "./pages/contacts/Contacts";
+import Invoices from "./pages/invoices/Invoices";
+import Form from "./pages/form/Form";
+import Cal from "./pages/calendar/Cal";
 
 // import Teams from "./pages/Teams";
 // import Calendar from "./pages/Calendar";
@@ -40,6 +42,8 @@ function App() {
                   <Route path="/team" element={<Employees />} />
                   <Route path="/contacts" element={<Contacts />} />
                   <Route path="/invoices" element={<Invoices />} />
+                  <Route path="/form" element={<Form />} />
+                  <Route path="/calendar" element={<Cal />} />
                 </Routes>
               </div>
             </div>
