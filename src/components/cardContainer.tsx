@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import CardRow from "./CardRow";
-import { State } from "../pages/login/Login";
+import { State } from "../pages/login/login";
 
 export interface FieldState {
   value: string;

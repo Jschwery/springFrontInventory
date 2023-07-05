@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../../components/Header";
-import Login from "../login/Login";
+import Login from "../login/login";
 import logo from "../images/banner_logo.png";
 
 function Home() {
