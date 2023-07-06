@@ -1,4 +1,8 @@
-.fc .fc-col-header-cell-cushion { 
-    padding-top: 5px;
-    padding-bottom: 5px;
-  }
+.fc .fc-col-header-cell-cushion {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.fc:hover {
+  cursor: pointer;
+}

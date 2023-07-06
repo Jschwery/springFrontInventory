@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -6,7 +6,6 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import { formatDate } from "@fullcalendar/core";
 import "./calStyles.css";
-
 import {
   Box,
   List,
@@ -17,31 +16,38 @@ import {
 } from "@mui/material";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
-import { useEffect } from "preact/hooks";
+import { useEffect } from "react";
+import * as React from "react";
+import BasicModal from "./modal";
 
 const Cal = () => {
+  const calendarRef = useRef(null);
   const theme = useTheme();
-
   const colors = tokens(theme.palette.mode);
   const [currentEvents, setCurrentEvents] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState([null, null] || [null]);
+  const [event, setEvent] = useState([]);
+  const [selected, setSelected] = useState([]);
 
   useEffect(() => {
-    console.log(theme);
-  }, [theme]);
+    console.log("evnet?");
+    console.log(event);
+  }, [event]);
 
-  const handleDateClick = (selected) => {
-    const title = prompt("Please enter a new title for your event");
-    const calendarApi = selected.view.calendar;
-    calendarApi.unselect();
+  const modalCallback = (title, startStr, endStr, allDay) => {
+    if (calendarRef.current) {
+      let calendarApi = calendarRef.current.getApi();
 
-    if (title) {
       calendarApi.addEvent({
-        id: `${selected.dateStr}-${title}`,
-        title,
-        start: selected.startStr,
-        end: selected.endStr,
-        allDay: selected.allDay,
+        id: `${startStr}-${title}`,
+        title: title,
+        start: startStr,
+        end: endStr,
+        allDay: allDay,
       });
+    } else {
+      console.error("Calendar API not available");
     }
   };
 
@@ -53,6 +59,19 @@ const Cal = () => {
     ) {
       selected.event.remove();
     }
+  };
+  const handleDateClick = (selected) => {
+    setEvent(selected.view.calendar);
+    setSelected(selected);
+    let endDate = new Date(selected.endStr);
+    endDate.setDate(endDate.getDate() - 1);
+    let correctedEndStr = endDate.toISOString().split("T")[0];
+    if (selected.startStr === correctedEndStr) {
+      setSelectedDate([selected.startStr]);
+    } else {
+      setSelectedDate([selected.startStr, correctedEndStr]);
+    }
+    setModalOpen(true);
   };
 
   return (
@@ -67,6 +86,7 @@ const Cal = () => {
           borderRadius="4px"
         >
           <Typography variant="h5">Events</Typography>
+
           <List>
             {currentEvents.map((event) => (
               <ListItem
@@ -77,6 +97,20 @@ const Cal = () => {
                   borderRadius: "2px",
                 }}
               >
+                <BasicModal
+                  selected={event}
+                  headerText={"Set Event"}
+                  subText={"set the text fo this evenetttt"}
+                  open={modalOpen}
+                  allDayEvent={selected}
+                  functionCallback={modalCallback}
+                  handleClose={() => {
+                    setModalOpen(false);
+                    setSelectedDate([null, null]);
+                  }}
+                  selectedDate={selectedDate}
+                />
+
                 <ListItemText
                   primary={event.title}
                   secondary={
@@ -93,10 +127,9 @@ const Cal = () => {
             ))}
           </List>
         </Box>
-
-        {/* CALENDAR */}
         <Box flex="1 1 100%" ml="15px">
           <FullCalendar
+            ref={calendarRef}
             eventColor={`${colors.greenAcc[500]}`}
             height="75vh"
             plugins={[
@@ -131,5 +164,4 @@ const Cal = () => {
     </Box>
   );
 };
-
 export default Cal;
