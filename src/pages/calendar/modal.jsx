@@ -18,12 +18,8 @@ export default function BasicModal({
   allDayEvent,
 }) {
   const [eventName, setName] = useState("");
-  const [startDate, setStartDate] = useState(
-    format(addDays(new Date(selectedDate[0]), 1), "yyyy-MM-dd")
-  );
-  const [endDate, setEndDate] = useState(
-    format(addDays(new Date(selectedDate[1]), 1), "yyyy-MM-dd")
-  );
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const style = {
@@ -38,9 +34,9 @@ export default function BasicModal({
     p: 4,
   };
   React.useEffect(() => {
-    console.log("start date: " + startDate);
-    console.log("end date: " + endDate);
-  }, [endDate, startDate]);
+    setStartDate(format(addDays(new Date(selectedDate[0]), 1), "yyyy-MM-dd"));
+    setEndDate(format(addDays(new Date(selectedDate[1]), 1), "yyyy-MM-dd"));
+  }, [selectedDate]);
 
   const checkoutSchema = yup.object().shape({
     date: yup
@@ -62,15 +58,17 @@ export default function BasicModal({
     ? initialValues
     : { date: initialValues.startDate };
 
-  const handleFormSubmit = (values) => {
+  const handleFormSubmit = (values, start, end) => {
     functionCallback(
       eventName,
-      values.startDate,
-      values.endDate,
-      allDayEvent.allDay
+      start,
+      format(addDays(new Date(end), 2), "yyyy-MM-dd"),
+      true
     );
     handleClose();
   };
+
+  format(addDays(new Date(), 1), "yyyy-MM-dd");
 
   const handleEventName = (event) => {
     setName(event.target.value);

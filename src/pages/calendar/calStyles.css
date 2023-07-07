@@ -6,3 +6,7 @@
 .fc:hover {
   cursor: pointer;
 }
+
+.fc-event-time {
+  display: none;
+}

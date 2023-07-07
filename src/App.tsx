@@ -23,31 +23,41 @@ import Cal from "./pages/calendar/Cal";
 // import Charts from "./pages/Charts";
 // import Geography from "./pages/Geography";
 
+import { useEffect, useMemo, useState } from "react";
+import { EventProvider } from "./global/EventProvider";
+import { Calendar } from "@fullcalendar/core";
+
 function App() {
   const mode = useMode();
+  const [key, setKey] = useState(0);
+  const forceRerender = () => setKey((prevKey) => prevKey + 1);
 
   return (
     <ColorModeContext.Provider value={mode}>
       <ThemeProvider theme={mode.theme}>
-        <CssBaseline />
-        <div className="app">
-          <Router>
-            <div className="layout">
-              <SideNavBar className="sidebar" />
-              <div className="main-content">
-                <Topbar />
-                <Routes>
-                  <Route path="/" element={<Login />} />
-                  <Route path="/team" element={<Employees />} />
-                  <Route path="/contacts" element={<Contacts />} />
-                  <Route path="/form" element={<Form />} />
-                  <Route path="/calendar" element={<Cal />} />
-                  <Route path="/invoices" element={<Invoices />} />
-                </Routes>
+        <EventProvider>
+          <CssBaseline />
+          <div className="app">
+            <Router>
+              <div className="layout">
+                <SideNavBar doRerender={forceRerender} className="sidebar" />
+                <div className="main-content">
+                  <Topbar />
+                  <div key={key}>
+                    <Routes>
+                      <Route path="/" element={<Login />} />
+                      <Route path="/team" element={<Employees />} />
+                      <Route path="/contacts" element={<Contacts />} />
+                      <Route path="/form" element={<Form />} />
+                      <Route path="/invoices" element={<Invoices />} />
+                      <Route path="/calendar" element={<Cal />} />
+                    </Routes>
+                  </div>
+                </div>
               </div>
-            </div>
-          </Router>
-        </div>
+            </Router>
+          </div>
+        </EventProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

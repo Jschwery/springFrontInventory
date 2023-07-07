@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useRef } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { useState } from "react";
 import { Box, Icon, IconButton, Typography, useTheme } from "@mui/material";
@@ -57,27 +57,37 @@ const SidebarLink = ({
   );
 };
 
-const SideNavBar = ({ className }: { className: string }) => {
+const SideNavBar = ({
+  className,
+  doRerender,
+}: {
+  className: string;
+  doRerender: () => void;
+}) => {
   const theme = useTheme();
   const colorPalette = tokens(theme.palette.mode);
   const [isMinimized, setIsMinimized] = useState(false);
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [sidebarState, setSidebarState] = useState("uncollapsed");
-
+  const sideBarRef = useRef(null);
   const handleSidebarToggle = () => {
     setIsMinimized((currentIsMinimized) => !currentIsMinimized);
     setSidebarState((currentState) =>
       currentState === "collapsed" ? "uncollapsed" : "collapsed"
     );
+    setTimeout(() => {
+      doRerender();
+    }, 1000);
   };
 
   return (
     <Box
+      ref={sideBarRef}
       component="div"
       className={className}
       sx={{
         transition: "all 0.5s ease",
-        width: isMinimized ? theme.spacing(15) : theme.spacing(30), // Replace with your own widths
+        width: isMinimized ? theme.spacing(15) : theme.spacing(30),
         "& .pro-sidebar-inner": {
           background: `${colorPalette.primary[400]} !important`,
           height: "100vh",

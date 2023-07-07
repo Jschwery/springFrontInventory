@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -16,29 +16,23 @@ import {
 } from "@mui/material";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
-import { useEffect } from "react";
 import * as React from "react";
 import BasicModal from "./modal";
+import { useEventContext } from "../../global/EventProvider";
 
 const Cal = () => {
   const calendarRef = useRef(null);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [currentEvents, setCurrentEvents] = useState([]);
+  const [currentEvents, setCurrentEvents] = useEventContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState([null, null] || [null]);
-  const [event, setEvent] = useState([]);
   const [selected, setSelected] = useState([]);
-
-  useEffect(() => {
-    console.log("evnet?");
-    console.log(event);
-  }, [event]);
 
   const modalCallback = (title, startStr, endStr, allDay) => {
     if (calendarRef.current) {
       let calendarApi = calendarRef.current.getApi();
-
+      console.log("the title is: " + title);
       calendarApi.addEvent({
         id: `${startStr}-${title}`,
         title: title,
@@ -61,7 +55,6 @@ const Cal = () => {
     }
   };
   const handleDateClick = (selected) => {
-    setEvent(selected.view.calendar);
     setSelected(selected);
     let endDate = new Date(selected.endStr);
     endDate.setDate(endDate.getDate() - 1);
@@ -73,11 +66,18 @@ const Cal = () => {
     }
     setModalOpen(true);
   };
+  useEffect(() => {
+    if (calendarRef.current) {
+      let calendarApi = calendarRef.current.getApi();
+      currentEvents.forEach((event) => {
+        calendarApi.addEvent(event);
+      });
+    }
+  }, [calendarRef]);
 
   return (
     <Box m="20px">
       <Header title="Calendar" subtitle="Full Calendar Interactive Page" />
-
       <Box display="flex" justifyContent="space-between">
         <Box
           flex="1 1 20%"
