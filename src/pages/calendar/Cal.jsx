@@ -21,6 +21,7 @@ import BasicModal from "./modal";
 import { useEventContext } from "../../global/EventProvider";
 import DeleteModal from "./DeleteModal";
 import { useCalendar } from "../../hooks/useCalendar";
+import WeekDayModal from "./WeekDayModal";
 
 const Cal = () => {
   const calendarRef = useRef(null);
@@ -65,6 +66,8 @@ const Cal = () => {
   };
 
   const handleDateClick = (selected) => {
+    console.log(selected);
+
     dispatch({ type: "set_selected", payload: selected });
 
     const calendarApi = calendarRef.current.getApi();
@@ -76,6 +79,12 @@ const Cal = () => {
       dispatch({ type: "toggle_weekDayModal", payload: true });
     }
   };
+
+  useEffect(() => {
+    console.log("weekday modal is: ");
+    console.log(state.weekDayModal);
+  }, [state.weekDayModal]);
+
   const handleEventDropOrResize = (info) => {
     let updatedEvents = state.currentEvents.map((event) => {
       if (event.id === info.event.id) {
@@ -141,6 +150,14 @@ const Cal = () => {
             subText={`Are you sure you want to delete event `}
             open={state.deleteModalOpen}
             selectedEvent={state.selectedEvent}
+            deleteEventCallback={handleEventClick}
+            handleClose={() => {
+              dispatch({ type: "toggle_deleteModal", payload: false });
+            }}
+          />
+          <WeekDayModal
+            open={state.weekDayModal}
+            selectedDate={state.selected}
             deleteEventCallback={handleEventClick}
             handleClose={() => {
               dispatch({ type: "toggle_deleteModal", payload: false });
