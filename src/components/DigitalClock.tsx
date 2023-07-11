@@ -2,19 +2,28 @@ import * as React from "react";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { MultiSectionDigitalClock } from "@mui/x-date-pickers/MultiSectionDigitalClock";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
+import { useEffect } from "react";
+import { tokens } from "../theme";
 
-export default function DigitalClock() {
+type DigitalClockProps = {
+  getDateTime: (date: any) => void;
+};
+
+export default function DigitalClock({ getDateTime }: DigitalClockProps) {
+  const [dateTime, setDateTime] = React.useState();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  useEffect(() => {
+    if (dateTime !== "") {
+      getDateTime(dateTime);
+    }
+  }, [dateTime]);
+
   const handleDigitalChange = (event: any) => {
-    console.log("cool");
-    console.log(typeof event);
-    console.log(event);
-
     const locale = event.$L;
     const date = event.$d;
-
-    console.log("Locale: ", locale);
-    console.log("Date and time: ", date);
+    setDateTime(date);
   };
 
   return (
@@ -23,7 +32,7 @@ export default function DigitalClock() {
         p={"10px"}
         sx={{
           "& .MuiMenuItem-root.Mui-selected": {
-            backgroundColor: "red",
+            backgroundColor: colors.greenAcc[500],
           },
         }}
       >

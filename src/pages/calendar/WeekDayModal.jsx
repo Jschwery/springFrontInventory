@@ -17,11 +17,6 @@ export default function WeekDayModal({
   functionCallback,
   selectedDate,
 }) {
-  React.useEffect(() => {
-    console.log("selected date is: ");
-    console.log(selectedDate);
-  }, [selectedDate]);
-
   const [eventName, setName] = useState("");
   const [startDate, setStartDate] = useState();
   const [submittedError, setSubmittedError] = useState("");
@@ -47,21 +42,11 @@ export default function WeekDayModal({
         new Date(selectedDate.startStr),
         "yyyy-MM-dd'T'HH:mm:ss"
       );
+      console.log("poopy");
       console.log(stringNew);
       setStartDate(stringNew);
     }
   }, [selectedDate]);
-
-  const checkoutSchema = yup.object().shape({
-    date: yup
-      .date()
-      .required("Date is required")
-      .min(new Date(), "Date cannot be in the past"),
-  });
-
-  const formInitialValues = {
-    date: addDays(new Date(), 1).toISOString().substring(0, 10),
-  };
 
   const handleFormSubmit = (values) => {
     if (eventName !== "") {
@@ -82,6 +67,9 @@ export default function WeekDayModal({
     setSubmittedError(false);
     setName(event.target.value);
   };
+  const getDateCallback = (date) => {
+    setStartDate(date);
+  };
 
   return (
     <Box>
@@ -97,7 +85,7 @@ export default function WeekDayModal({
             variant="h2"
             component="h2"
           >
-            yo
+            {`Date Selected: ${format(new Date(selectedDate), "MM/dd")}`}
           </Typography>
           {submittedError && (
             <Typography
@@ -174,7 +162,7 @@ export default function WeekDayModal({
                 placeholder="event name"
                 onChange={handleEventName}
               />
-              <DigitalClock />
+              <DigitalClock getDateTime={getDateCallback} />
             </Box>
 
             <Box
@@ -185,6 +173,7 @@ export default function WeekDayModal({
               }}
             >
               <Button
+                onClick={handleFormSubmit}
                 sx={{
                   bgcolor: `${colors.primary[100]}`,
                   ":hover": { bgcolor: `${colors.primary[300]}` },

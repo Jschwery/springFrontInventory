@@ -31,6 +31,7 @@ const Cal = () => {
   const [currentEvents, setCurrentEvents] = useEventContext();
 
   const modalCallback = (title, startStr, endStr, allDay) => {
+    console.log("yess callback clicked");
     let calendarApi = calendarRef.current.getApi();
     calendarApi.addEvent({
       id: `${startStr}-${title}`,
@@ -156,12 +157,17 @@ const Cal = () => {
             }}
           />
           <WeekDayModal
+            headerText={"Set Event"}
             open={state.weekDayModal}
-            selectedDate={state.selected}
-            deleteEventCallback={handleEventClick}
+            functionCallback={modalCallback}
             handleClose={() => {
-              dispatch({ type: "toggle_deleteModal", payload: false });
+              dispatch({ type: "toggle_weekDayModal", payload: false });
+              dispatch({
+                type: "set_selectedDate",
+                payload: [null, null],
+              });
             }}
+            selectedDate={state.selected}
           />
           <List>
             {state.currentEvents
