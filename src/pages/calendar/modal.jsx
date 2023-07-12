@@ -56,16 +56,16 @@ export default function BasicModal({
       : "",
   };
 
+  const formInitialValues = initialValues.endDate
+    ? initialValues
+    : { date: initialValues.startDate };
+
   const checkoutSchema = yup.object().shape({
     date: yup
       .date()
       .required("Date is required")
       .min(new Date(), "Date cannot be in the past"),
   });
-
-  const formInitialValues = initialValues.endDate
-    ? initialValues
-    : { date: initialValues.startDate };
 
   const handleFormSubmit = (values, start, end) => {
     if (eventName !== "") {

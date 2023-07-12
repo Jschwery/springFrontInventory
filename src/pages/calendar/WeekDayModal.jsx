@@ -1,33 +1,28 @@
 import { TextField } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { format } from "date-fns";
-import styles from "./calStyles.css";
+import { format, addDays } from "date-fns";
+import "./calStyles.css";
 import { Box, Typography, useTheme, Button, Modal } from "@mui/material";
 import { tokens } from "../../theme";
 import * as React from "react";
-import { addDays } from "date-fns";
 import { useState } from "react";
-import DigitalClock from "../../components/DigitalClock";
 import { useCalendar } from "../../hooks/useCalendar";
+import DigitalClock from "../../components/DigitalClock";
 import dayjs from "dayjs";
-import Header from "../../components/Header";
 
-//need to set the start date time to the time
-
-export default function WeekDayModal({
-  headerText,
+export default function BasicModal({
   open,
   handleClose,
   functionCallback,
   selectedDate,
 }) {
   const [eventName, setName] = useState("");
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [submittedError, setSubmittedError] = useState("");
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const [showStartTime, setShowStartTime] = useState(false);
   const [showEndTime, setShowEndTime] = useState(false);
+  const [submittedError, setSubmittedError] = useState("");
   const [isValidDateOrder, setIsValidDateOrder] = useState(true);
   const [state, dispatch] = useCalendar();
 
@@ -46,52 +41,38 @@ export default function WeekDayModal({
     p: 4,
   };
 
-  const handleFormSubmit = (values) => {
-    console.log("handleFormSubmit called");
+  React.useEffect(() => {
+    if (selectedDate.startStr && selectedDate.endStr) {
+      setStartDate(format(new Date(selectedDate.startStr), "yyyy-MM-dd"));
+      setEndDate(format(new Date(selectedDate.endStr), "yyyy-MM-dd"));
+    }
+  }, [selectedDate]);
+
+  React.useEffect(() => {
+    console.log("start and end date");
+    console.log(startDate);
+    console.log(endDate);
+  }, [startDate, endDate]);
+
+  const handleFormSubmit = (values, start, end) => {
     if (eventName !== "") {
       functionCallback(
         eventName,
-        `${values.startDate}T${values.startTime}`,
-        `${values.endDate}T${values.endTime}`,
-        false
+        start,
+        format(addDays(new Date(end), 2), "yyyy-MM-dd"),
+        true
       );
       setName("");
-      setShowStartTime(false);
-      setShowEndTime(false);
       handleClose();
     } else {
       setSubmittedError(true);
     }
   };
 
-  const handleModalClose = () => {
-    console.log("handleModalClose called");
-    setShowStartTime(false);
-    setShowEndTime(false);
-    handleClose();
-  };
-
-  const handleEventName = (event) => {
-    setSubmittedError(false);
-    setName(event.target.value);
-  };
-  const getStartDateTime = (date) => {
-    setStartDate(date);
-  };
-
-  const getEndDateTime = (date) => {
-    setEndDate(date);
-  };
   const handleShowStartDate = () => {
     dispatch({ type: "set_selectedEvent", payload: true });
     setShowStartTime(!showStartTime);
     setShowEndTime(false);
-  };
-
-  const handleShowEndDate = () => {
-    dispatch({ type: "set_selectedEvent", payload: true });
-    setShowEndTime(!showEndTime);
-    setShowStartTime(false);
   };
 
   const checkDateOrder = () => {
@@ -106,49 +87,38 @@ export default function WeekDayModal({
       }
     }
   };
-  React.useEffect(() => {
-    console.log("selectedDate inside useEffect:", selectedDate);
-    if (selectedDate.startStr && selectedDate.endStr) {
-      let dateStr = dayjs(selectedDate.startStr);
-      let dateEnd = dayjs(selectedDate.endStr);
 
-      console.log("About to set start and end date with:", [
-        dateStr.format(),
-        dateEnd.format(),
-      ]);
+  const handleShowEndDate = () => {
+    dispatch({ type: "set_selectedEvent", payload: true });
+    setShowEndTime(!showEndTime);
+    setShowStartTime(false);
+  };
 
-      setStartDate(dateStr);
-      setEndDate(dateEnd);
-    }
-  }, [selectedDate]);
+  format(addDays(new Date(), 1), "yyyy-MM-dd");
 
-  React.useEffect(() => {
-    console.log("selectedDate inside useEffect:", selectedDate);
-    if (selectedDate.startStr) {
-      let dateStr = dayjs(selectedDate.startStr);
+  const handleEventName = (event) => {
+    setSubmittedError(false);
+    setName(event.target.value);
+  };
 
-      console.log("About to set start date with:", dateStr.format());
+  const handleStartDateChange = (event) => {
+    setStartDate(event);
+  };
 
-      setStartDate(dateStr);
-    }
-  }, [selectedDate]);
+  const handleEndDateChange = (event) => {
+    setEndDate(event);
+  };
 
-  React.useEffect(() => {
-    console.log("selectedDate inside useEffect:", selectedDate);
-    if (selectedDate.endStr) {
-      let dateEnd = dayjs(selectedDate.endStr);
-
-      console.log("About to set end date with:", dateEnd.format());
-
-      setEndDate(dateEnd);
-    }
-  }, [selectedDate]);
+  let initialValues = {
+    startDate: selectedDate.startStr ? dayjs(selectedDate.startStr) : null,
+    endDate: selectedDate.endStr ? dayjs(selectedDate.endStr) : null,
+  };
 
   return (
     <Box>
       <Modal
         open={open}
-        onClose={handleModalClose}
+        onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -157,9 +127,8 @@ export default function WeekDayModal({
             sx={{ color: colors.primary[100] }}
             variant="h2"
             component="h2"
-          >
-            {dayjs(startDate).format("MM/DD/YYYY HH:mm:ss")}
-          </Typography>
+          ></Typography>
+
           {submittedError && (
             <Typography
               sx={{
@@ -262,17 +231,15 @@ export default function WeekDayModal({
                       d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <Typography
-                    className={`pl-3 ${
-                      !isValidDateOrder ? "text-red-500" : ""
-                    }`}
-                    variant="h4"
-                  ></Typography>
+                  <Typography className={`pl-3`} variant="h4"></Typography>
                 </Box>
               </Box>
 
               <Box className={`fade ${showStartTime ? "show" : ""}`}>
-                <DigitalClock getDateTime={getStartDateTime} />
+                <DigitalClock
+                  getDateTime={handleStartDateChange}
+                  defaultDate={initialValues.startDate}
+                />
               </Box>
 
               <Box
@@ -308,7 +275,10 @@ export default function WeekDayModal({
               </Box>
 
               <Box className={`py-3 fade ${showEndTime ? "show" : ""}`}>
-                <DigitalClock getDateTime={getEndDateTime} />
+                <DigitalClock
+                  getDateTime={handleEndDateChange}
+                  defaultDate={initialValues.endDate}
+                />
               </Box>
             </Box>
 

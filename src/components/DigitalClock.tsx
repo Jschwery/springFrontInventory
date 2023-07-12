@@ -8,22 +8,25 @@ import { tokens } from "../theme";
 
 type DigitalClockProps = {
   getDateTime: (date: any) => void;
+  defaultDate?: any;
 };
 
-export default function DigitalClock({ getDateTime }: DigitalClockProps) {
-  const [dateTime, setDateTime] = React.useState();
+export default function DigitalClock({
+  getDateTime,
+  defaultDate,
+}: DigitalClockProps) {
+  const [dateTime, setDateTime] = React.useState(defaultDate);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
   useEffect(() => {
-    if (dateTime !== "") {
+    if (dateTime) {
       getDateTime(dateTime);
     }
   }, [dateTime]);
 
   const handleDigitalChange = (event: any) => {
-    const locale = event.$L;
-    const date = event.$d;
-    setDateTime(date);
+    setDateTime(event);
   };
 
   return (
@@ -36,7 +39,10 @@ export default function DigitalClock({ getDateTime }: DigitalClockProps) {
           },
         }}
       >
-        <MultiSectionDigitalClock onChange={handleDigitalChange} />
+        <MultiSectionDigitalClock
+          onChange={handleDigitalChange}
+          defaultValue={dateTime}
+        />
       </Box>
     </LocalizationProvider>
   );
