@@ -2,24 +2,33 @@ import { TextField } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { format } from "date-fns";
-import "./calStyles.css";
+import styles from "./calStyles.css";
 import { Box, Typography, useTheme, Button, Modal } from "@mui/material";
 import { tokens } from "../../theme";
 import * as React from "react";
 import { addDays } from "date-fns";
 import { useState } from "react";
 import DigitalClock from "../../components/DigitalClock";
+import { useCalendar } from "../../hooks/useCalendar";
+import dayjs from "dayjs";
+import Header from "../../components/Header";
+
+//need to set the start date time to the time
 
 export default function WeekDayModal({
+  headerText,
   open,
   handleClose,
-  headerText,
   functionCallback,
   selectedDate,
 }) {
   const [eventName, setName] = useState("");
-  const [startDate, setStartDate] = useState();
+  const [startAndEndDate, setStartAndEndDate] = useState([null, null]);
   const [submittedError, setSubmittedError] = useState("");
+  const [showStartTime, setShowStartTime] = useState(false);
+  const [showEndTime, setShowEndTime] = useState(false);
+  const [isValidDateOrder, setIsValidDateOrder] = useState(true);
+  const [state, dispatch] = useCalendar();
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -37,14 +46,10 @@ export default function WeekDayModal({
   };
 
   React.useEffect(() => {
-    if (selectedDate.startStr) {
-      let stringNew = format(
-        new Date(selectedDate.startStr),
-        "yyyy-MM-dd'T'HH:mm:ss"
-      );
-      console.log("poopy");
-      console.log(stringNew);
-      setStartDate(stringNew);
+    if (selectedDate.startStr && selectedDate.endStr) {
+      let dateStr = dayjs(selectedDate.startStr);
+      let dateEnd = dayjs(selectedDate.endStr);
+      setStartAndEndDate([dateStr, dateEnd]);
     }
   }, [selectedDate]);
 
@@ -57,36 +62,107 @@ export default function WeekDayModal({
         false
       );
       setName("");
+      setShowStartTime(false);
+      setShowEndTime(false);
+      setStartAndEndDate([null, null]);
       handleClose();
     } else {
       setSubmittedError(true);
     }
   };
 
+  const handleModalClose = () => {
+    setShowStartTime(false);
+    setShowEndTime(false);
+    setStartAndEndDate([null, null]);
+    handleClose();
+  };
+
   const handleEventName = (event) => {
     setSubmittedError(false);
     setName(event.target.value);
   };
-  const getDateCallback = (date) => {
-    setStartDate(date);
+  const getStartDateTime = (date) => {
+    setStartAndEndDate([date, startAndEndDate[1]]);
   };
+
+  const getEndDateTime = (date) => {
+    setStartAndEndDate([startAndEndDate[0], date]);
+  };
+  const handleShowStartDate = () => {
+    dispatch({ type: "set_selectedEvent", payload: true });
+    setShowStartTime(!showStartTime);
+    setShowEndTime(false);
+  };
+
+  const handleShowEndDate = () => {
+    dispatch({ type: "set_selectedEvent", payload: true });
+    setShowEndTime(!showEndTime);
+    setShowStartTime(false);
+  };
+
+  const checkDateOrder = () => {
+    if (startAndEndDate[0] && startAndEndDate[1]) {
+      const startDate = new Date(startAndEndDate[0]);
+      const endDate = new Date(startAndEndDate[1]);
+
+      if (startDate.getTime() < endDate.getTime()) {
+        setIsValidDateOrder(true);
+      } else {
+        setIsValidDateOrder(false);
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    checkDateOrder();
+    console.log(selectedDate);
+    console.log("SKIP");
+    console.log(startAndEndDate);
+  }, [startAndEndDate]);
+
+  /*
+  TODO:
+  get the start and end time to fill in,
+
+  on click modal, set both the start and end time state to false
+
+  put the current tim next to start time
+  and end time
+  
+  put the date at the top
+
+  put the please fill event name under the required input
+  */
 
   return (
     <Box>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={handleModalClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
+          <Header
+            title={headerText}
+            subTitle={
+              startAndEndDate[0]
+                ? dayjs(new Date(startAndEndDate[0]["$d"])).format("MMMM D")
+                : ""
+            }
+          />
+          <h3 className="text-pink-600">
+            {startAndEndDate[0]
+              ? startAndEndDate[0].format("YYYY-MM-DD")
+              : "No date set"}
+          </h3>
+
           <Typography
             sx={{ color: colors.primary[100] }}
             variant="h2"
             component="h2"
-          >
-            {`Date Selected: ${format(new Date(selectedDate), "MM/dd")}`}
-          </Typography>
+          ></Typography>
           {submittedError && (
             <Typography
               sx={{
@@ -162,14 +238,102 @@ export default function WeekDayModal({
                 placeholder="event name"
                 onChange={handleEventName}
               />
-              <DigitalClock getDateTime={getDateCallback} />
+              <Box>
+                <Box
+                  className=" hover:cursor-pointer hover:opacity-75"
+                  display="inline-flex"
+                  sx={{ py: "15px" }}
+                  alignItems="center"
+                  justifyContent="flex-start"
+                  onClick={handleShowStartDate}
+                >
+                  <Typography className="pr-2" variant="h3">
+                    Start Time
+                  </Typography>
+
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <Typography
+                    className={`pl-3 ${
+                      !isValidDateOrder ? "text-red-500" : ""
+                    }`}
+                    variant="h4"
+                  >
+                    {startAndEndDate[0]
+                      ? dayjs(startAndEndDate[0]).format("hh:mm A").toString()
+                      : ""}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box className={`fade ${showStartTime ? "show" : ""}`}>
+                <DigitalClock
+                  getDateTime={getStartDateTime}
+                  defaultValue={startAndEndDate[0]}
+                />
+              </Box>
+
+              <Box
+                className=" hover:cursor-pointer hover:opacity-75"
+                display="inline-flex"
+                sx={{ py: "15px" }}
+                alignItems="center"
+                justifyContent="flex-start"
+                onClick={handleShowEndDate}
+              >
+                <Typography className="pr-2" variant="h3">
+                  End Time
+                </Typography>
+
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <Typography
+                  className={`pl-3 ${!isValidDateOrder ? "text-red-500" : ""}`}
+                  variant="h4"
+                >
+                  {startAndEndDate[1]
+                    ? dayjs(startAndEndDate[1]).format("hh:mm A").toString()
+                    : ""}
+                </Typography>
+              </Box>
+
+              <Box className={`py-3 fade ${showEndTime ? "show" : ""}`}>
+                <DigitalClock
+                  getDateTime={getEndDateTime}
+                  defaultValue={startAndEndDate[1]}
+                />
+              </Box>
             </Box>
 
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "flex-end",
-                pt: "20px",
+                pt: "10px",
               }}
             >
               <Button

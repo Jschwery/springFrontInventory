@@ -9,10 +9,6 @@ function Registration() {
   const [applyImageSize, setApplyImageSize] = useState(false);
 
   useEffect(() => {
-    console.log("apply image size: " + applyImageSize);
-  }, [applyImageSize]);
-
-  useEffect(() => {
     const handleResize = () => {
       setApplyImageSize(window.innerWidth <= 534);
     };

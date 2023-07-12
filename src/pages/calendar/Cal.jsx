@@ -31,7 +31,6 @@ const Cal = () => {
   const [currentEvents, setCurrentEvents] = useEventContext();
 
   const modalCallback = (title, startStr, endStr, allDay) => {
-    console.log("yess callback clicked");
     let calendarApi = calendarRef.current.getApi();
     calendarApi.addEvent({
       id: `${startStr}-${title}`,
@@ -67,8 +66,6 @@ const Cal = () => {
   };
 
   const handleDateClick = (selected) => {
-    console.log(selected);
-
     dispatch({ type: "set_selected", payload: selected });
 
     const calendarApi = calendarRef.current.getApi();
@@ -80,11 +77,6 @@ const Cal = () => {
       dispatch({ type: "toggle_weekDayModal", payload: true });
     }
   };
-
-  useEffect(() => {
-    console.log("weekday modal is: ");
-    console.log(state.weekDayModal);
-  }, [state.weekDayModal]);
 
   const handleEventDropOrResize = (info) => {
     let updatedEvents = state.currentEvents.map((event) => {
@@ -165,6 +157,10 @@ const Cal = () => {
               dispatch({
                 type: "set_selectedDate",
                 payload: [null, null],
+              });
+              dispatch({
+                type: "close_dateTimes",
+                payload: false,
               });
             }}
             selectedDate={state.selected}

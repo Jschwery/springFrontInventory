@@ -9,6 +9,7 @@ interface State {
   weekDayModal: boolean;
   deleteModalOpen: boolean;
   selectedEvent: any | null;
+  closeDatesTimes: boolean;
 }
 
 type Action =
@@ -18,7 +19,8 @@ type Action =
   | { type: "set_selected"; payload: any[] }
   | { type: "toggle_weekDayModal"; payload: boolean }
   | { type: "toggle_deleteModal"; payload: boolean }
-  | { type: "set_selectedEvent"; payload: any | null };
+  | { type: "set_selectedEvent"; payload: any | null }
+  | { type: "close_dateTimes"; payload: boolean };
 
 const initialState: State = {
   currentEvents: [],
@@ -28,6 +30,7 @@ const initialState: State = {
   weekDayModal: false,
   deleteModalOpen: false,
   selectedEvent: null,
+  closeDatesTimes: false,
 };
 
 function calendar(state: State, action: Action): State {
@@ -46,6 +49,9 @@ function calendar(state: State, action: Action): State {
       return { ...state, deleteModalOpen: action.payload };
     case "set_selectedEvent":
       return { ...state, selectedEvent: action.payload };
+    case "close_dateTimes":
+      return { ...state, closeDatesTimes: action.payload };
+
     default:
       throw new Error("Could not find action");
   }

@@ -10,3 +10,21 @@
 .fc-event-time {
   display: none;
 }
+
+.fade {
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: all 0.4s ease-in-out;
+  height: 1px;
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.fade.show {
+  transition: 0.4s ease-in-out;
+  transform: scaleY(1);
+  opacity: 1;
+  visibility: visible;
+  height: 20vh;
+}
