@@ -23,7 +23,8 @@ export default function WeekDayModal({
   selectedDate,
 }) {
   const [eventName, setName] = useState("");
-  const [startAndEndDate, setStartAndEndDate] = useState([null, null]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [submittedError, setSubmittedError] = useState("");
   const [showStartTime, setShowStartTime] = useState(false);
   const [showEndTime, setShowEndTime] = useState(false);
@@ -45,15 +46,8 @@ export default function WeekDayModal({
     p: 4,
   };
 
-  React.useEffect(() => {
-    if (selectedDate.startStr && selectedDate.endStr) {
-      let dateStr = dayjs(selectedDate.startStr);
-      let dateEnd = dayjs(selectedDate.endStr);
-      setStartAndEndDate([dateStr, dateEnd]);
-    }
-  }, [selectedDate]);
-
   const handleFormSubmit = (values) => {
+    console.log("handleFormSubmit called");
     if (eventName !== "") {
       functionCallback(
         eventName,
@@ -64,7 +58,6 @@ export default function WeekDayModal({
       setName("");
       setShowStartTime(false);
       setShowEndTime(false);
-      setStartAndEndDate([null, null]);
       handleClose();
     } else {
       setSubmittedError(true);
@@ -72,9 +65,9 @@ export default function WeekDayModal({
   };
 
   const handleModalClose = () => {
+    console.log("handleModalClose called");
     setShowStartTime(false);
     setShowEndTime(false);
-    setStartAndEndDate([null, null]);
     handleClose();
   };
 
@@ -83,11 +76,11 @@ export default function WeekDayModal({
     setName(event.target.value);
   };
   const getStartDateTime = (date) => {
-    setStartAndEndDate([date, startAndEndDate[1]]);
+    setStartDate(date);
   };
 
   const getEndDateTime = (date) => {
-    setStartAndEndDate([startAndEndDate[0], date]);
+    setEndDate(date);
   };
   const handleShowStartDate = () => {
     dispatch({ type: "set_selectedEvent", payload: true });
@@ -102,38 +95,54 @@ export default function WeekDayModal({
   };
 
   const checkDateOrder = () => {
-    if (startAndEndDate[0] && startAndEndDate[1]) {
-      const startDate = new Date(startAndEndDate[0]);
-      const endDate = new Date(startAndEndDate[1]);
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
 
-      if (startDate.getTime() < endDate.getTime()) {
+      if (start.getTime() < end.getTime()) {
         setIsValidDateOrder(true);
       } else {
         setIsValidDateOrder(false);
       }
     }
   };
+  React.useEffect(() => {
+    console.log("selectedDate inside useEffect:", selectedDate);
+    if (selectedDate.startStr && selectedDate.endStr) {
+      let dateStr = dayjs(selectedDate.startStr);
+      let dateEnd = dayjs(selectedDate.endStr);
+
+      console.log("About to set start and end date with:", [
+        dateStr.format(),
+        dateEnd.format(),
+      ]);
+
+      setStartDate(dateStr);
+      setEndDate(dateEnd);
+    }
+  }, [selectedDate]);
 
   React.useEffect(() => {
-    checkDateOrder();
-    console.log(selectedDate);
-    console.log("SKIP");
-    console.log(startAndEndDate);
-  }, [startAndEndDate]);
+    console.log("selectedDate inside useEffect:", selectedDate);
+    if (selectedDate.startStr) {
+      let dateStr = dayjs(selectedDate.startStr);
 
-  /*
-  TODO:
-  get the start and end time to fill in,
+      console.log("About to set start date with:", dateStr.format());
 
-  on click modal, set both the start and end time state to false
+      setStartDate(dateStr);
+    }
+  }, [selectedDate]);
 
-  put the current tim next to start time
-  and end time
-  
-  put the date at the top
+  React.useEffect(() => {
+    console.log("selectedDate inside useEffect:", selectedDate);
+    if (selectedDate.endStr) {
+      let dateEnd = dayjs(selectedDate.endStr);
 
-  put the please fill event name under the required input
-  */
+      console.log("About to set end date with:", dateEnd.format());
+
+      setEndDate(dateEnd);
+    }
+  }, [selectedDate]);
 
   return (
     <Box>
@@ -144,25 +153,13 @@ export default function WeekDayModal({
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Header
-            title={headerText}
-            subTitle={
-              startAndEndDate[0]
-                ? dayjs(new Date(startAndEndDate[0]["$d"])).format("MMMM D")
-                : ""
-            }
-          />
-          <h3 className="text-pink-600">
-            {startAndEndDate[0]
-              ? startAndEndDate[0].format("YYYY-MM-DD")
-              : "No date set"}
-          </h3>
-
           <Typography
             sx={{ color: colors.primary[100] }}
             variant="h2"
             component="h2"
-          ></Typography>
+          >
+            {dayjs(startDate).format("MM/DD/YYYY HH:mm:ss")}
+          </Typography>
           {submittedError && (
             <Typography
               sx={{
@@ -270,19 +267,12 @@ export default function WeekDayModal({
                       !isValidDateOrder ? "text-red-500" : ""
                     }`}
                     variant="h4"
-                  >
-                    {startAndEndDate[0]
-                      ? dayjs(startAndEndDate[0]).format("hh:mm A").toString()
-                      : ""}
-                  </Typography>
+                  ></Typography>
                 </Box>
               </Box>
 
               <Box className={`fade ${showStartTime ? "show" : ""}`}>
-                <DigitalClock
-                  getDateTime={getStartDateTime}
-                  defaultValue={startAndEndDate[0]}
-                />
+                <DigitalClock getDateTime={getStartDateTime} />
               </Box>
 
               <Box
@@ -314,18 +304,11 @@ export default function WeekDayModal({
                 <Typography
                   className={`pl-3 ${!isValidDateOrder ? "text-red-500" : ""}`}
                   variant="h4"
-                >
-                  {startAndEndDate[1]
-                    ? dayjs(startAndEndDate[1]).format("hh:mm A").toString()
-                    : ""}
-                </Typography>
+                ></Typography>
               </Box>
 
               <Box className={`py-3 fade ${showEndTime ? "show" : ""}`}>
-                <DigitalClock
-                  getDateTime={getEndDateTime}
-                  defaultValue={startAndEndDate[1]}
-                />
+                <DigitalClock getDateTime={getEndDateTime} />
               </Box>
             </Box>
 
