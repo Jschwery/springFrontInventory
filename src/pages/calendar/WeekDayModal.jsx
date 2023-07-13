@@ -5,9 +5,9 @@ import { Box, Typography, useTheme, Button, Modal } from "@mui/material";
 import { tokens } from "../../theme";
 import * as React from "react";
 import { useState } from "react";
-import { useCalendar } from "../../hooks/useCalendar";
 import DigitalClock from "../../components/DigitalClock";
 import dayjs from "dayjs";
+import { CalendarContext } from "../../global/calendar/CalendarContext";
 
 export default function WeekDayModal({
   open,
@@ -22,7 +22,7 @@ export default function WeekDayModal({
   const [showEndTime, setShowEndTime] = useState(false);
   const [submittedError, setSubmittedError] = useState("");
   const [isValidDateOrder, setIsValidDateOrder] = useState(true);
-  const [state, dispatch] = useCalendar();
+  const { state, dispatch } = React.useContext(CalendarContext);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -129,14 +129,12 @@ export default function WeekDayModal({
     endDate: selectedDate.endStr ? dayjs(selectedDate.endStr) : null,
   };
   /*
-  set the time in the event title 
+  set the time in the event title
   set the error text in correct spot
 
   dont let submit if the red text is showing
 
   fix coloring
-
-  
 
   */
 

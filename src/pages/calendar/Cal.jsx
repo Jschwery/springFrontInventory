@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -18,33 +18,38 @@ import Header from "../../components/Header";
 import { tokens } from "../../theme";
 import * as React from "react";
 import BasicModal from "./modal";
-import { useEventContext } from "../../global/EventProvider";
 import DeleteModal from "./DeleteModal";
-import { useCalendar } from "../../hooks/useCalendar";
 import WeekDayModal from "./WeekDayModal";
+import { CalendarContext } from "../../global/calendar/CalendarContext";
 
 const Cal = () => {
   const calendarRef = useRef(null);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [state, dispatch] = useCalendar();
-  const [currentEvents, setCurrentEvents] = useEventContext();
+  const { state, dispatch } = React.useContext(CalendarContext);
+  useEffect(() => {
+    console.log("the state is");
+    console.log(state);
+  }, [state]);
 
   const modalCallback = (title, startStr, endStr, allDay) => {
-    let calendarApi = calendarRef.current.getApi();
-    calendarApi.addEvent({
+    let newEvent = {
       id: `${startStr}-${title}`,
       title: title,
       start: startStr,
       end: endStr,
       allDay: allDay,
-    });
+    };
 
-    dispatch({ type: "set_currentEvents", payload: calendarApi.getEvents() });
+    dispatch({
+      type: "set_currentEvents",
+      payload: [...state.currentEvents, newEvent],
+    });
   };
 
   const handleEventClick = (selectedEvent) => {
     dispatch({ type: "set_selectedEvent", payload: selectedEvent });
+
     let newCurrentEvents = state.currentEvents.filter(
       (event) => event.id !== selectedEvent.id
     );
@@ -52,15 +57,14 @@ const Cal = () => {
       type: "set_currentEvents",
       payload: newCurrentEvents,
     });
-    selectedEvent.remove();
   };
 
   const handleDeleteModalClick = (info) => {
-    let newCurrentEvents = currentEvents.filter(
+    let newCurrentEvents = state.currentEvents.filter(
       (event) => event.id !== info.event.id
     );
-    setCurrentEvents(newCurrentEvents);
 
+    dispatch({ type: "set_currentEvents", payload: newCurrentEvents });
     dispatch({ type: "set_selectedEvent", payload: info.event });
     dispatch({ type: "toggle_deleteModal", payload: true });
   };
@@ -87,9 +91,6 @@ const Cal = () => {
           end: info.event.end
             ? info.event.end.toISOString()
             : info.event.start.toISOString(),
-          title: info.event.title,
-          id: info.event.id,
-          allDay: info.event.allDay,
         };
       } else {
         return event;
@@ -105,13 +106,13 @@ const Cal = () => {
   useEffect(() => {
     if (calendarRef.current) {
       let calendarApi = calendarRef.current.getApi();
-      currentEvents.forEach((event) => {
+      calendarApi.getEvents().forEach((event) => event.remove());
+
+      state.currentEvents.forEach((event) => {
         calendarApi.addEvent(event);
       });
-
-      dispatch({ type: "set_currentEvents", payload: calendarApi.getEvents() });
     }
-  }, [calendarRef, currentEvents, dispatch]);
+  }, [calendarRef, state.currentEvents]);
 
   return (
     <Box m="20px">

@@ -23,9 +23,8 @@ import Cal from "./pages/calendar/Cal";
 // import Charts from "./pages/Charts";
 // import Geography from "./pages/Geography";
 
-import { useEffect, useMemo, useState } from "react";
-import { EventProvider } from "./global/EventProvider";
-import { Calendar } from "@fullcalendar/core";
+import { useState } from "react";
+import { CalendarProvider } from "./global/calendar/CalendarProvider";
 
 function App() {
   const mode = useMode();
@@ -35,7 +34,7 @@ function App() {
   return (
     <ColorModeContext.Provider value={mode}>
       <ThemeProvider theme={mode.theme}>
-        <EventProvider>
+        <CalendarProvider>
           <CssBaseline />
           <div className="app">
             <Router>
@@ -57,7 +56,7 @@ function App() {
               </div>
             </Router>
           </div>
-        </EventProvider>
+        </CalendarProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
   );
