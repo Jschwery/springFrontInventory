@@ -1,6 +1,4 @@
 import { TextField } from "@mui/material";
-import { Formik } from "formik";
-import * as yup from "yup";
 import { format, addDays } from "date-fns";
 import "./calStyles.css";
 import { Box, Typography, useTheme, Button, Modal } from "@mui/material";
@@ -11,7 +9,7 @@ import { useCalendar } from "../../hooks/useCalendar";
 import DigitalClock from "../../components/DigitalClock";
 import dayjs from "dayjs";
 
-export default function BasicModal({
+export default function WeekDayModal({
   open,
   handleClose,
   functionCallback,
@@ -41,6 +39,25 @@ export default function BasicModal({
     p: 4,
   };
 
+  const formatDateWithSuffix = (date) => {
+    const dayOfMonth = parseInt(format(date, "d"), 10);
+    let suffix = "th";
+    if (dayOfMonth < 11 || dayOfMonth > 13) {
+      switch (dayOfMonth % 10) {
+        case 1:
+          suffix = "st";
+          break;
+        case 2:
+          suffix = "nd";
+          break;
+        case 3:
+          suffix = "rd";
+          break;
+      }
+    }
+    return format(date, `EEEE, MMMM d'${suffix}'`);
+  };
+
   React.useEffect(() => {
     if (selectedDate.startStr && selectedDate.endStr) {
       setStartDate(format(new Date(selectedDate.startStr), "yyyy-MM-dd"));
@@ -48,20 +65,14 @@ export default function BasicModal({
     }
   }, [selectedDate]);
 
-  React.useEffect(() => {
-    console.log("start and end date");
-    console.log(startDate);
-    console.log(endDate);
-  }, [startDate, endDate]);
+  const handleFormSubmit = () => {
+    console.log("submitted");
 
-  const handleFormSubmit = (values, start, end) => {
-    if (eventName !== "") {
-      functionCallback(
-        eventName,
-        start,
-        format(addDays(new Date(end), 2), "yyyy-MM-dd"),
-        true
-      );
+    if (eventName !== "" && startDate && endDate) {
+      let startStr = startDate.format();
+      let endStr = new Date(endDate).toISOString();
+
+      functionCallback(eventName, startStr, endStr, false);
       setName("");
       handleClose();
     } else {
@@ -88,6 +99,10 @@ export default function BasicModal({
     }
   };
 
+  React.useEffect(() => {
+    checkDateOrder();
+  }, [startDate, endDate]);
+
   const handleShowEndDate = () => {
     dispatch({ type: "set_selectedEvent", payload: true });
     setShowEndTime(!showEndTime);
@@ -113,6 +128,17 @@ export default function BasicModal({
     startDate: selectedDate.startStr ? dayjs(selectedDate.startStr) : null,
     endDate: selectedDate.endStr ? dayjs(selectedDate.endStr) : null,
   };
+  /*
+  set the time in the event title 
+  set the error text in correct spot
+
+  dont let submit if the red text is showing
+
+  fix coloring
+
+  
+
+  */
 
   return (
     <Box>
@@ -123,12 +149,6 @@ export default function BasicModal({
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography
-            sx={{ color: colors.primary[100] }}
-            variant="h2"
-            component="h2"
-          ></Typography>
-
           {submittedError && (
             <Typography
               sx={{
@@ -159,6 +179,14 @@ export default function BasicModal({
             </Typography>
           )}
           <Box m="20px">
+            <Typography
+              sx={{ color: colors.primary[100], pb: "15px" }}
+              variant="h3"
+              component="h3"
+            >
+              {startDate ? formatDateWithSuffix(new Date(startDate)) : ""}
+            </Typography>
+
             <Box
               sx={{
                 py: "10px",
@@ -231,7 +259,14 @@ export default function BasicModal({
                       d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <Typography className={`pl-3`} variant="h4"></Typography>
+                  <Typography
+                    className={`pl-3 ${
+                      !isValidDateOrder ? "text-red-500" : ""
+                    }`}
+                    variant="h4"
+                  >
+                    {startDate ? format(new Date(startDate), "hh:mm a") : ""}
+                  </Typography>
                 </Box>
               </Box>
 
@@ -271,7 +306,9 @@ export default function BasicModal({
                 <Typography
                   className={`pl-3 ${!isValidDateOrder ? "text-red-500" : ""}`}
                   variant="h4"
-                ></Typography>
+                >
+                  {endDate ? format(new Date(endDate), "hh:mm a") : ""}
+                </Typography>
               </Box>
 
               <Box className={`py-3 fade ${showEndTime ? "show" : ""}`}>

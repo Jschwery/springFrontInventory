@@ -101,6 +101,7 @@ function Contacts() {
         }}
       >
         <DataGrid
+          checkboxSelection
           rows={mockDataContacts}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
